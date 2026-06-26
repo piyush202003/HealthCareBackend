@@ -1,119 +1,337 @@
-super user:
-    username = admin
-    email = admin@gmai.com
-    password = admin123
+# Hospital Management REST API
 
+A RESTful API built using **Django**, **Django REST Framework**, **PostgreSQL**, and **JWT Authentication** for managing patients, doctors, and patient-doctor assignments.
 
-database:
-user = id, username, email, password, created_at
-patient = id, name, age, gender, phone, created_by(FK user), created_at
-doctor = id, name, specialization, phone, created_by(fk user), created_at
+## Features
 
-part 1:
-POST /api/auth/register/
-{
-    "username": "ram",
-    "email" : "ram@gmail.com",
-    "password": "ram@1234",
+* User Registration
+* JWT Authentication
+* Patient Management (CRUD)
+* Doctor Management (CRUD)
+* Patient-Doctor Mapping
+* PostgreSQL Database
+* Django REST Framework
+* JWT Authentication using Simple JWT
+
+---
+
+## Tech Stack
+
+* Python 3.x
+* Django
+* Django REST Framework
+* PostgreSQL
+* Simple JWT
+* uv (Package Manager)
+
+---
+
+## Project Structure
+
+```
+hospital_management/
+│
+├── accounts/
+│   ├── serializers.py
+│   ├── views.py
+│   └── urls.py
+│
+├── patients/
+│   ├── models.py
+│   ├── serializers.py
+│   ├── views.py
+│   └── urls.py
+│
+├── doctors/
+│   ├── models.py
+│   ├── serializers.py
+│   ├── views.py
+│   └── urls.py
+│
+├── mappings/
+│   ├── models.py
+│   ├── serializers.py
+│   ├── views.py
+│   └── urls.py
+│
+├── hospital_management/
+│   ├── settings.py
+│   └── urls.py
+│
+├── manage.py
+└── README.md
+```
+
+---
+
+## Installation
+
+### Clone Repository
+
+```bash
+git clone <repository-url>
+cd hospital_management
+```
+
+### Create Virtual Environment
+
+Using uv:
+
+```bash
+uv venv
+```
+
+Activate the virtual environment.
+
+Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+Linux/macOS
+
+```bash
+source .venv/bin/activate
+```
+
+### Install Dependencies
+
+```bash
+uv sync
+```
+
+or
+
+```bash
+uv pip install -r requirements.txt
+```
+
+---
+
+## Configure PostgreSQL
+
+Create a PostgreSQL database.
+
+Example:
+
+```sql
+CREATE DATABASE hospital_db;
+```
+
+Update the `DATABASES` configuration in `settings.py`.
+
+```python
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "hospital_db",
+        "USER": "postgres",
+        "PASSWORD": "your_password",
+        "HOST": "localhost",
+        "PORT": "5432",
+    }
 }
+```
 
+---
+
+## Apply Migrations
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+---
+
+## Create Superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+---
+
+## Run Server
+
+```bash
+python manage.py runserver
+```
+
+Server:
+
+```
+http://127.0.0.1:8000/
+```
+
+---
+
+# Authentication
+
+Authentication is implemented using **JWT (JSON Web Token)**.
+
+Include the access token in every protected request.
+
+```
+Authorization: Bearer <access_token>
+```
+
+---
+
+# API Endpoints
+
+## Authentication
+
+| Method | Endpoint              | Description                     |
+| ------ | --------------------- | ------------------------------- |
+| POST   | `/api/auth/register/` | Register a new user             |
+| POST   | `/api/auth/login/`    | Login user and obtain JWT token |
+
+---
+
+## Patient APIs
+
+| Method | Endpoint              | Description                    |
+| ------ | --------------------- | ------------------------------ |
+| POST   | `/api/patients/`      | Create Patient                 |
+| GET    | `/api/patients/`      | List Logged-in User's Patients |
+| GET    | `/api/patients/<id>/` | Retrieve Patient               |
+| PUT    | `/api/patients/<id>/` | Update Patient                 |
+| DELETE | `/api/patients/<id>/` | Delete Patient                 |
+
+---
+
+## Doctor APIs
+
+| Method | Endpoint             | Description     |
+| ------ | -------------------- | --------------- |
+| POST   | `/api/doctors/`      | Create Doctor   |
+| GET    | `/api/doctors/`      | List Doctors    |
+| GET    | `/api/doctors/<id>/` | Retrieve Doctor |
+| PUT    | `/api/doctors/<id>/` | Update Doctor   |
+| DELETE | `/api/doctors/<id>/` | Delete Doctor   |
+
+---
+
+## Patient-Doctor Mapping APIs
+
+| Method | Endpoint                      | Description                     |
+| ------ | ----------------------------- | ------------------------------- |
+| POST   | `/api/mappings/`              | Assign Doctor to Patient        |
+| GET    | `/api/mappings/`              | List All Mappings               |
+| GET    | `/api/mappings/<patient_id>/` | Get Doctors Assigned to Patient |
+| DELETE | `/api/mappings/<mapping_id>/` | Remove Doctor from Patient      |
+
+> **Note:** Since both patient IDs and mapping IDs are integers, you may need to use distinct URL patterns (for example, `/api/mappings/patient/<patient_id>/` and `/api/mappings/<mapping_id>/`) to avoid routing conflicts.
+
+---
+
+# Sample Login Request
+
+```http
 POST /api/auth/login/
-{
-    "username": "ram",
-    "password": "ram@1234",
-}
-{"refresh":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MjUzOTA3MCwiaWF0IjoxNzgyNDUyNjcwLCJqdGkiOiIzYWM3ZjZiOWFmYTA0ZTE3YTBmNzFkZjMyOGMyYjc0NyIsInVzZXJfaWQiOiIyIn0.taarEdS92GgRJPQiieekf1kHMeDubWrz5CrFy8nkuQI",
-"access":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgyNDUyOTcwLCJpYXQiOjE3ODI0NTI2NzAsImp0aSI6ImYxOGRmYmYzM2FkNDQwZWNiMDYzMDc2Yzk1MjhkMzBmIiwidXNlcl9pZCI6IjIifQ.Fn_UkZpbiXKKvj96n8OBNPKxjA4e3KcauCocRbhPvVk"}
+```
 
-part 2: 
-POST /api/patients/
-Authorization: Bearer <access_token>
+```json
 {
-    "first_name": "John",
-    "last_name": "Doe",
-    "age": 30,
-    "gender": "Male",
-    "phone": "9876543210",
-    "address": "Mumbai"
+    "username": "admin",
+    "password": "password123"
 }
+```
 
+Response
+
+```json
+{
+    "refresh": "refresh_token",
+    "access": "access_token"
+}
+```
+
+---
+
+# Sample Protected Request
+
+```
 GET /api/patients/
+```
+
+Headers
+
+```
 Authorization: Bearer <access_token>
+```
 
-GET /api/patients/1/
-Authorization: Bearer <access_token>
+---
 
-PUT /api/patients/1/
-Authorization: Bearer <access_token>
-{
-    "first_name": "John",
-    "last_name": "Smith",
-    "age": 31,
-    "gender": "Male",
-    "phone": "9999999999",
-    "address": "Pune"
-}
+# Database Models
 
-DELETE /api/patients/1/
-Authorization: Bearer <access_token>
+## Patient
 
-part 3 :
-POST /api/doctors/
-Authorization: Bearer <access_token>
-{
-    "first_name": "Rahul",
-    "last_name": "Sharma",
-    "specialization": "Cardiologist",
-    "experience": 10,
-    "phone": "9876543210",
-    "email": "rahul.sharma@example.com"
-}
+* first_name
+* last_name
+* age
+* gender
+* phone
+* address
+* created_by
 
-GET /api/doctors/
-Authorization: Bearer <access_token>
+---
 
-GET /api/doctors/1/
-Authorization: Bearer <access_token>
+## Doctor
 
-PUT /api/doctors/1/
-Authorization: Bearer <access_token>
-{
-    "first_name": "Rahul",
-    "last_name": "Sharma",
-    "specialization": "Neurologist",
-    "experience": 12,
-    "phone": "9876543210",
-    "email": "rahul.sharma@example.com"
-}
+* first_name
+* last_name
+* specialization
+* experience
+* phone
+* email
+* created_by
 
-DELETE /api/doctors/1/
-Authorization: Bearer <access_token>
+---
 
-part 4:
-POST /api/mappings/
-{
-    "patient": 1,
-    "doctor": 2
-}
+## PatientDoctorMapping
 
-GET /api/mappings/
+* patient
+* doctor
+* assigned_at
 
-GET /api/mappings/1/
+---
 
-DELETE /api/mappings/1/
+# Authentication Flow
 
-To allow anyone:
-from rest_framework.permissions import AllowAny, IsAuthenticated
+```
+Register
+      │
+      ▼
+Login
+      │
+      ▼
+Receive JWT Token
+      │
+      ▼
+Access Protected APIs
+      │
+      ▼
+Manage Patients, Doctors and Mappings
+```
 
-class DoctorListCreateAPIView(APIView):
-    def get_permissions(self):
-        if self.request.method == "GET":
-            return [AllowAny()]
-        return [IsAuthenticated()]
+---
 
+# Future Improvements
 
-class DoctorDetailAPIView(APIView):
-    def get_permissions(self):
-        if self.request.method == "GET":
-            return [AllowAny()]
-        return [IsAuthenticated()]
+* Custom User Model
+* Pagination
+* Search & Filtering
+* Swagger/OpenAPI Documentation
+* Docker Support
+* Unit Testing
+* CI/CD Pipeline
+* Role-Based Access Control (Admin/Doctor/Receptionist)
+
+---
+
+# Author
+
+Developed using Django REST Framework and PostgreSQL.

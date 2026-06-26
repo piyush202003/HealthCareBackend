@@ -1,0 +1,9 @@
+Django==5.2.4
+djangorestframework==3.16.0
+djangorestframework-simplejwt==5.5.1
+psycopg[binary]==3.2.9
+python-dotenv==1.1.1
+PyJWT==2.10.1
+sqlparse==0.5.3
+asgiref==3.9.1
+tzdata==2025.2
